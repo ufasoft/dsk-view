@@ -1,0 +1,3 @@
+[submodule "el"]
+	path = el
+	url = https://github.com/ufasoft/el.git

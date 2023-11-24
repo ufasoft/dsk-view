@@ -1,0 +1,19 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+      <Out>$(SolutionDir)artifacts</Out>
+      <BaseIntermediateOutputPath>$(Out)\obj\$(ProjectName)\</BaseIntermediateOutputPath>
+      <IntDir>$(Out)\obj\$(ProjectName)\$(PlatformShortName)_$(Configuration)\</IntDir>
+      <OutDir>$(Out)\$(PlatformShortName)_$(Configuration)\</OutDir>
+  </PropertyGroup>
+
+    <ItemDefinitionGroup>
+        <ClCompile Condition="'$(Configuration)'=='Debug'">
+            <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+            <Optimization>MinSpace</Optimization>
+            <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+        </ClCompile>
+    </ItemDefinitionGroup>
+
+
+</Project>

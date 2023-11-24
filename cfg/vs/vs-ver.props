@@ -1,0 +1,69 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <PlatformToolset Condition="'$(PlatformToolset)' == '' AND Exists('$(VCTargetsPath)\Platforms\Win32\PlatformToolsets\v143') ">v143</PlatformToolset>
+        <PlatformToolset Condition="'$(PlatformToolset)' == '' AND Exists('$(VCTargetsPath)\Platforms\Win32\PlatformToolsets\v142') ">v142</PlatformToolset>
+        <PlatformToolset Condition="'$(PlatformToolset)' == '' AND Exists('$(VCTargetsPath)\Platforms\Win32\PlatformToolsets\v141') ">v141</PlatformToolset>
+        <PlatformToolset Condition="'$(PlatformToolset)' == '' AND Exists('$(VCTargetsPath)\..\V141') ">v141</PlatformToolset>
+        <PlatformToolset Condition="'$(PlatformToolset)' == '' AND Exists('$(VCTargetsPath)\..\V140') ">v140</PlatformToolset>
+
+        <WindowsTargetPlatformVersion Condition="'$(PlatformToolset)' == 'v140'">10.0.14393.0</WindowsTargetPlatformVersion> <!-- Last SDK for XP -->
+        <WindowsTargetPlatformVersion Condition="'$(PlatformToolset)' == 'v141'">10.0.14393.0</WindowsTargetPlatformVersion>
+      <WindowsTargetPlatformVersion Condition="'$(PlatformToolset)' == 'v142'">10.0.20348.0</WindowsTargetPlatformVersion>
+
+
+        <YasmPath>C:\UTIL\</YasmPath>
+        <SpectreMitigation>false</SpectreMitigation>
+        <GenerateManifest>false</GenerateManifest>
+        <EmbedManifest>false</EmbedManifest>
+        <LinkIncremental>false</LinkIncremental>
+            <CLRSupport>false</CLRSupport>
+
+
+    </PropertyGroup>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+    <PropertyGroup>
+    <!--
+      <Out>$(SolutionDir)artifacts</Out>
+      <BaseIntermediateOutputPath>$(Out)\obj\$(ProjectName)\</BaseIntermediateOutputPath>
+      <IntDir>$(Out)\obj\$(ProjectName)\$(PlatformShortName)_$(Configuration)\</IntDir>
+      <OutDir>$(Out)\$(PlatformShortName)_$(Configuration)\</OutDir>
+      -->
+    </PropertyGroup>
+
+    <ItemDefinitionGroup>
+        <ClCompile>
+<!--            <LanguageStandard>stdcpp17</LanguageStandard>  -->
+            <LanguageStandard>stdcpplatest</LanguageStandard>
+            <ConformanceMode>false</ConformanceMode>
+            <BufferSecurityCheck>false</BufferSecurityCheck>
+            <IntrinsicFunctions>true</IntrinsicFunctions>
+            <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+            <RuntimeLibrary Condition="'$(Configuration)'=='Debug'" >MultiThreadedDebug</RuntimeLibrary>
+            <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+
+            <EnableEnhancedInstructionSet Condition="$(PlatformToolsetVersion) > 120 AND '$(Platform)'=='Win32'">NoExtensions</EnableEnhancedInstructionSet>
+            <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+                <AdditionalOptions>/d2FH4</AdditionalOptions>
+                <AdditionalOptions>/permissive</AdditionalOptions>
+<!--            <AdditionalOptions>/J</AdditionalOptions> -->
+            <SupportJustMyCode>false</SupportJustMyCode>
+            <FunctionLevelLinking>true</FunctionLevelLinking>
+        </ClCompile>
+        <ClCompile Condition="'$(Configuration)'=='Release'">
+            <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+            <Optimization>MinSpace</Optimization>
+            <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+        </ClCompile>
+
+        <Link>
+<!--            <WindowsSDK_LibraryPath_x86>C:\P\Windows Kits\10\Lib\10.0.10240.0\um\x86</WindowsSDK_LibraryPath_x86> -->
+
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <ProgramDatabaseFile>$(OutDir)PDB/$(TargetName).pdb</ProgramDatabaseFile>
+            <AdditionalLibraryDirectories>$(OutDir)lib</AdditionalLibraryDirectories>
+            <LargeAddressAware Condition="'$(Platform)'=='Win32'">true</LargeAddressAware>
+        </Link>
+        <Midl>
+        </Midl>
+    </ItemDefinitionGroup>
+</Project>

@@ -1,0 +1,27 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = tab
+indent_size = 4
+insert_final_newline = true
+tab_width = 4
+trim_trailing_whitespace = true
+
+[*.{asm,inc,mac}]
+indent_style = tab
+indent_size = 8
+tab_width = 8
+
+[*.{cpp,h}]
+cpp_indent_case_labels		= false
+cpp_indent_namespace_contents	= false
+cpp_wrap_preserve_blocks 	= all_one_line_scopes
+;cpp_space_pointer_reference_alignment	= left
+cpp_new_line_scope_braces_on_separate_lines = false
+cpp_new_line_close_brace_same_line_empty_function  = true
+cpp_new_line_before_catch       = false
+cpp_new_line_before_else        = false
+cpp_new_line_before_open_brace_function = same_line
+cpp_indent_goto_labels = one_left

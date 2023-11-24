@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="elwin">
+      <UniqueIdentifier>{61c4c1d2-74cb-4599-a033-049bcf0cd961}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\driver">
+      <UniqueIdentifier>{53e97a98-1824-4389-9f35-f60057f84717}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="driver/rt11-volume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShellExt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="volume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="driver\fat-volume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="driver\bk-volume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="far-plugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shellext-register.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shellext-volume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shellext-dataobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shellext-view.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="driver\fat-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="driver/rt11-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="driver/mbr-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="driver\volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="driver\andos-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="driver\mkdos-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="driver\csidos-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="driver\hdi-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="total-plugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\el\elwin\dllmodul.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fs11.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="fs11.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="rt11-volume.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="fs11.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
