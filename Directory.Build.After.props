@@ -8,6 +8,12 @@
   </PropertyGroup>
 
     <ItemDefinitionGroup>
+        <ClCompile>
+          <ConformanceMode>false</ConformanceMode>
+          <BufferSecurityCheck>false</BufferSecurityCheck>
+          <IntrinsicFunctions>true</IntrinsicFunctions>
+        </ClCompile>
+
         <ClCompile Condition="'$(Configuration)'=='Debug'">
             <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
             <Optimization>MinSpace</Optimization>

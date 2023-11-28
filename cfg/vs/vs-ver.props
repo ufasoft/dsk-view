@@ -32,11 +32,12 @@
 
     <ItemDefinitionGroup>
         <ClCompile>
-<!--            <LanguageStandard>stdcpp17</LanguageStandard>  -->
-            <LanguageStandard>stdcpplatest</LanguageStandard>
+<!--
             <ConformanceMode>false</ConformanceMode>
             <BufferSecurityCheck>false</BufferSecurityCheck>
             <IntrinsicFunctions>true</IntrinsicFunctions>
+
+-->
             <BasicRuntimeChecks>Default</BasicRuntimeChecks>
             <RuntimeLibrary Condition="'$(Configuration)'=='Debug'" >MultiThreadedDebug</RuntimeLibrary>
             <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
