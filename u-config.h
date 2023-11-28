@@ -54,10 +54,4 @@
 #define UCFG_USE_REGISTRY 1
 #define UCFG_COMPLEX_WINAPP 0
 
-#ifdef _DEBUG
-#	define UCFG_TRC 1
-#else
-#	define UCFG_TRC 0
-#endif
-
 #pragma warning(disable: 4541) // 'dynamic_cast'
