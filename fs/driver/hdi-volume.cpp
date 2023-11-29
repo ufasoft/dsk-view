@@ -99,7 +99,7 @@ private:
 		ReadSector(7, buf);
 		for (int i = 0; i < Partitions; ++i) {
 			DirEntry e;
-			int16_t cyl = (int16_t)load_little_u16(buf + 502 - i * 2);
+			int16_t cyl = (int16_t)load_little_u16(buf + 502 - i * 4);
 			e.ReadOnly = cyl < 0;
 			cyl = e.ReadOnly ? -cyl : cyl;
 			int head = cyl & 0xF;
@@ -161,17 +161,18 @@ class SamaraVolume : public HdiVolume {
 	void Init(const path& filepath) override {
 		base::Init(filepath);
 		uint8_t buf[512];
-		ReadSector(ReservedSectors + 1, buf);
+		ReadSector(1, buf);
 		Heads = buf[5] + 1;
 		Sectors = buf[4];
 		int cylVol = load_little_u16(buf + 2);
 		Cylinders = int((Fs.Length / BytesPerSector - ReservedSectors + cylVol - 1) / cylVol);
+		Files = GetDirEntries(0, false);
 	}
 
 	vector<DirEntry> GetDirEntries(uint32_t cluster, bool bWithExtra) override {
 		vector<DirEntry> r;
 		uint8_t buf[512];
-		ReadSector(7, buf);
+		ReadSector(1, buf);
 		for (int i = 0; i < 64; ++i) {
 			auto lba = load_little_u32(buf + 6 + i * 4);
 			if (!lba)
@@ -206,16 +207,18 @@ static class SamaraVolumeFactory : public HdiVolumeFactory {
 		int sectors = buf[4];
 		if (!cylVol || cylVol != heads * sectors)
 			return false;
-		for (int i = 0; i < 64; ++i) {
+		int i;
+		for (i = 0; i < 64; ++i) {
 			auto lba = load_little_u32(buf + 6 + i * 4);
-			if (!lba || (reserved + lba + 1) * 512 < s.size())
+			if (!lba || (reserved + lba + 1) * 512 >= s.size())
 				break;
 			uint8_t buf2[512];
 			ReadSector(s, (reserved + lba), buf2);
 			if (load_little_u16(buf2) != i + 2)
 				return false;
 		}
-		return weight > 3 ? weight : 0;
+		weight += i > 0 ? 1 : 0;
+		return weight > 2 ? weight : 0;
 	}
 
 	unique_ptr<Volume> CreateInstance() override {
