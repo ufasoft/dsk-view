@@ -7,19 +7,18 @@
       <OutDir>$(Out)\$(PlatformShortName)_$(Configuration)\</OutDir>
   </PropertyGroup>
 
-    <ItemDefinitionGroup>
-        <ClCompile>
-          <ConformanceMode>false</ConformanceMode>
-          <BufferSecurityCheck>false</BufferSecurityCheck>
-          <IntrinsicFunctions>true</IntrinsicFunctions>
-        </ClCompile>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <ConformanceMode>false</ConformanceMode>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
 
-        <ClCompile Condition="'$(Configuration)'=='Debug'">
-            <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-            <Optimization>MinSpace</Optimization>
-            <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-        </ClCompile>
-    </ItemDefinitionGroup>
-
+    <ClCompile Condition="'$(Configuration)'=='Debug'">
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
 
 </Project>
