@@ -1,5 +1,4 @@
-// Copyright(c) 2023 Ufasoft  http://ufasoft.com  mailto:support@ufasoft.com,  Sergey Pavlov  mailto:dev@ufasoft.com
-//
+// © 2023 Ufasoft https://ufasoft.com, Sergey Pavlov mailto:dev@ufasoft.com
 // SPDX-License-Identifier: GPL-2.0-or-later
 //
 // Based on
@@ -489,20 +488,22 @@ void FatVolume::CopyFileTo(const DirEntry& fileEntry, Stream& os) {
 }
 
 void FatVolume::ChangeDirectory(RCString name) {
-	if (name == "/")
+	if (name == "/") {
 		CurDirCluster = RootCluster;
-	else {
-		if (name == "..") {
-			if (CurDirCluster != RootCluster) {
-				for (auto& e : GetDirEntries(CurDirCluster, true))
-					if (e.FileName == "..") {
-						CurDirCluster = (uint32_t)e.FirstCluster;
-						goto LAB_FOUND;
-					}
-				CurDirCluster = RootCluster;
+		CurDirName = "/";
+	}
+	else if (name != "..") {
+		CurDirCluster = (uint32_t)GetEntry(name)->FirstCluster;
+		CurDirName = name;
+	}
+	else if (CurDirCluster != RootCluster) {
+		for (auto& e : GetDirEntries(CurDirCluster, true))
+			if (e.FileName == "..") {
+				CurDirCluster = (uint32_t)e.FirstCluster;
+				CurDirName = CurDirCluster == RootCluster ? nullptr : "..";
+				goto LAB_FOUND;
 			}
-		} else
-			CurDirCluster = (uint32_t)GetEntry(name)->FirstCluster;
+		CurDirCluster = RootCluster;
 	}
 LAB_FOUND:
 	if (!CurDirCluster)

@@ -92,6 +92,9 @@
     <ClCompile Include="..\el\elwin\dllmodul.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="driver\files11-volume.cpp">
+      <Filter>Source Files\driver</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="fs11.def">

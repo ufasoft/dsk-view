@@ -1,7 +1,8 @@
-// Copyright(c) 2023 Ufasoft  http://ufasoft.com  mailto:support@ufasoft.com,  Sergey Pavlov  mailto:dev@ufasoft.com
+// © 2023 Ufasoft https://ufasoft.com, Sergey Pavlov mailto:dev@ufasoft.com
+// SPDX-License-Identifier: GPL-3.0-or-later
 //
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
+// DEC RT-11 Filesystem driver
+// 
 // Based on
 //	RT–11 Volume and File Formats Manual
 //	http://www.bitsavers.org/pdf/dec/pdp11/rt11/v5.6_Aug91/AA-PD6PA-TC_RT-11_Volume_and_File_Formats_Manual_Aug91.pdf
@@ -159,7 +160,7 @@ class DirectoryWriter {
 		curEntry = 0;
 	}
 
-	void SaveSegment(bool bLast) {		
+	void SaveSegment(bool bLast) {
 		auto entrySize = 14 + load_little_u16(segmentSectors + 6);
 		store_little_u16(segmentSectors + 2, bLast ? 0 : curSegmentId + 1);
 		store_little_u16(segmentSectors + 10 + curEntry * entrySize, uint16_t(Rt11Volume::DirectoryEntryStatus::EndOfSegment));
@@ -180,7 +181,7 @@ public:
 		: volume(volume) {
 		uint8_t homeBlock[512];
 		volume.ReadBlock(1, homeBlock);
-		secCurSegment = secDirectory = load_little_u16(homeBlock + 0724);		 
+		secCurSegment = secDirectory = load_little_u16(homeBlock + 0724);
 		LoadSegment();
 	}
 
@@ -286,7 +287,7 @@ Rt11Volume::CFiles::iterator Rt11Volume::GetEntry(RCString filename) {
 	for (auto it = Files.begin(); it != Files.end(); ++it)
 		if (it->FileName == filename)
 			return it;
-	Throw(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+	Throw(errc::no_such_file_or_directory);
 }
 
 void Rt11Volume::RemoveFile(RCString filename) {

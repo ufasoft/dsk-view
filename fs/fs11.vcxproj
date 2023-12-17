@@ -169,6 +169,7 @@
     <ClCompile Include="driver\andos-volume.cpp" />
     <ClCompile Include="driver\csidos-volume.cpp" />
     <ClCompile Include="driver\fat-volume.cpp" />
+    <ClCompile Include="driver\files11-volume.cpp" />
     <ClCompile Include="driver\hdi-volume.cpp" />
     <ClCompile Include="driver\mkdos-volume.cpp" />
     <ClCompile Include="driver\volume.cpp" />

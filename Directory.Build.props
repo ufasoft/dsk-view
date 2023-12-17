@@ -1,6 +1,7 @@
 <Project>
 
   <PropertyGroup>
+    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset Condition="'$(PlatformToolset)' == '' AND Exists('$(VCTargetsPath)\Platforms\Win32\PlatformToolsets\v143') ">v143</PlatformToolset>
 
     <ForceImportAfterCppProps>$(MsbuildThisFileDirectory)\Directory.Build.After.props</ForceImportAfterCppProps>
