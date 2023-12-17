@@ -88,7 +88,7 @@ protected:
 	uint64_t TotalSectors = 0;
 	uint64_t FirstDataCluster = numeric_limits<uint64_t>::max();	// or Sector
 	uint16_t BytesPerSector = 512;
-	uint8_t SectorsPerCluster = 1;
+	uint16_t SectorsPerCluster = 1;
 
 	bool CaseSensitive = false;
 	bool _openedForModifying = false;

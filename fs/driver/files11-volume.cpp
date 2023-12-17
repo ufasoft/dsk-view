@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // DEC FILES-11 Filesystem driver
-// 
+//
 // Based on
 //		Files-11 On-Disk Structure Specification - ODS-1
 //		https://bitsavers.org/pdf/dec/pdp11/rsx11m_s/Files-11_ODS-1_Spec_Jun77.pdf
@@ -162,7 +162,7 @@ class Files11Volume : public Volume {
 	vector<DirEntry> GetDirEntries(uint32_t fileNum, bool bWithExtra) override {
 		MemoryStream ms;
 		CopyFileTo(GetEntryByFileId(fileNum), ms);
-		Span s(ms);
+		Span s = ms.AsSpan();
 		vector<DirEntry> r;
 		for (int off = 0; off < s.size(); off += 16) {
 			const uint8_t *p = s.data() + off;
@@ -195,10 +195,10 @@ class Files11Volume : public Volume {
 		Files = GetDirEntries(CurDirFileId, false);
 	}
 
-	int64_t FreeSpace() override {		
+	int64_t FreeSpace() override {
 		MemoryStream ms;
 		CopyFileTo(GetEntryByFileId(FileNumStorageBitmap), ms);
-		Span s(ms);
+		Span s = ms.AsSpan();
 		uint32_t sum = 0;
 		for (int off = 512; off < s.size(); off += 4)
 			sum += PopCount(load_little_u32(s.data() + off));
