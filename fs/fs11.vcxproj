@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="driver\bk-volume.h" />
     <ClInclude Include="driver\fat-volume.h" />
+    <ClInclude Include="driver\files11-volume.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="driver/rt11-volume.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="driver\andos-volume.cpp" />
     <ClCompile Include="driver\csidos-volume.cpp" />
     <ClCompile Include="driver\fat-volume.cpp" />
+    <ClCompile Include="driver\files11-ods1-volume.cpp" />
     <ClCompile Include="driver\files11-volume.cpp" />
     <ClCompile Include="driver\hdi-volume.cpp" />
     <ClCompile Include="driver\mkdos-volume.cpp" />

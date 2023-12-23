@@ -55,7 +55,6 @@ interface IVolumeCallback {
 };
 
 class Volume
-//!!!R	: public IVolume
 {
 public:
 	typedef vector<DirEntry> CFiles;
@@ -64,7 +63,10 @@ public:
 
 	CFiles Files;
 	String Filename;
+
 	String CurDirName;
+	vector<String> CurPath;
+	vector<int> CurFidPath;
 
 	virtual ~Volume();
 	virtual void Init(const path& filepath);
