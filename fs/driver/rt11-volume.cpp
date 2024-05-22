@@ -75,8 +75,11 @@ String DecodeRadix50(uint16_t w) {
 }
 
 static const char rt11BootSectorMessage[10] = "\n?BOOT-U-";
-static const char * const rt11VolumeIdentification = "RT11A       ";
-static const char* const rt11SystemIdentification = "DECRT11A    ";
+
+static const char
+	* const rt11VolumeIdentification = "RT11A       "
+	, * const rt11SystemIdentification = "DECRT11A    "
+	, * const fodosIdentification = "FODOS       ";
 
 DateTime Rt11Volume::FromRt11DateFormat(uint16_t date) {
 	return date
@@ -93,9 +96,10 @@ vector<DirEntry> Rt11Volume::GetDirEntries(uint32_t cluster, bool bWithExtra) {
 	ReadBlock(1, homeBlock);
 	uint8_t segmentSectors[1024];
 	auto blkSegment = load_little_u16(homeBlock + 0724);
-	for (uint16_t nextSegment = 1; nextSegment; blkSegment += 2) {
-		ReadBlock(blkSegment, segmentSectors);
-		ReadBlock(blkSegment + 1, segmentSectors + 512);
+	for (uint16_t nextSegment = 1; nextSegment;) {
+		auto blk = blkSegment + (nextSegment - 1) * 2;
+		ReadBlock(blk, segmentSectors);
+		ReadBlock(blk + 1, segmentSectors + 512);
 		nextSegment = load_little_u16(segmentSectors + 2);
 		auto extraBytes = load_little_u16(segmentSectors + 6);
 		auto fileDataBlock = load_little_u16(segmentSectors + 8);
@@ -116,7 +120,11 @@ vector<DirEntry> Rt11Volume::GetDirEntries(uint32_t cluster, bool bWithExtra) {
 			default:
 				dirEntry.FileName = (DecodeRadix50(load_little_u16(entry + 2)) + DecodeRadix50(load_little_u16(entry + 4))).Trim()
 					+ "." + DecodeRadix50(load_little_u16(entry + 6)).Trim();
-				dirEntry.CreationTime = FromRt11DateFormat(load_little_u16(entry + 12));
+				try {
+					dirEntry.CreationTime = FromRt11DateFormat(load_little_u16(entry + 12));
+				} catch (const exception&) {
+					dirEntry.CreationTime = s_defaultDate;
+				}
 				dirEntry.LastWriteTime = dirEntry.LastAccessTime = dirEntry.CreationTime;
 			}
 			dirEntry.ReadOnly = (uint16_t)status & (uint16_t)DirectoryEntryStatus::Protected;
@@ -127,6 +135,7 @@ vector<DirEntry> Rt11Volume::GetDirEntries(uint32_t cluster, bool bWithExtra) {
 			fileDataBlock += len;
 			NumberOfBlocks = max(NumberOfBlocks, fileDataBlock);
 			dirEntry.Length = len * 512;
+			dirEntry.Aux1 = load_little_u16(entry + 10);		// #channel, #job
 			dirEntry.ExtraData = Blob(entry + 14, extraBytes);
 			if (!dirEntry.Empty || bWithExtra)
 				r.push_back(dirEntry);
@@ -219,12 +228,17 @@ public:
 		store_little_u16(buf + 6, filename[2]);
 		uint16_t nFileSizeInBlocks = uint16_t(entry.Length / 512);
 		store_little_u16(buf + 8, nFileSizeInBlocks);
-		auto y = (int)entry.CreationTime.Year - 1972;
-		store_little_u16(buf + 12, uint16_t(
-			y & 0x1F | ((y & 0x60) << 9)
-			| ((unsigned)entry.CreationTime.Month << 10)
-			| ((unsigned)entry.CreationTime.Day << 5)
-		));
+		store_little_u16(buf + 10, (uint16_t)entry.Aux1);		// #channel, #job
+		if (entry.CreationTime == s_defaultDate)
+			store_little_u16(buf + 12, 0);
+		else {
+			auto y = (int)entry.CreationTime.Year - 1972;
+			store_little_u16(buf + 12, uint16_t(
+				y & 0x1F | ((y & 0x60) << 9)
+				| ((unsigned)entry.CreationTime.Month << 10)
+				| ((unsigned)entry.CreationTime.Day << 5)
+			));
+		}
 		memcpy(buf + 14, entry.ExtraData.constData(), std::min((uint16_t)entry.ExtraData.size(), extraBytes));
 		curDataSector += nFileSizeInBlocks;
 		++curEntry;
@@ -428,7 +442,8 @@ static class Rt11VolumeFactory : public IVolumeFactory {
 			weights += 1;
 		if (!memcmp(data + 01730, rt11VolumeIdentification, 12))
 			weights += 2;
-		if (!memcmp(data + 01760, rt11SystemIdentification, 12))
+		if (!memcmp(data + 01760, rt11SystemIdentification, 12)
+			|| !memcmp(data + 01760, fodosIdentification, 12))
 			weights += 2;
 		uint16_t checksum = 0;
 		for (int off = 512; off < 1022; off += 2)
