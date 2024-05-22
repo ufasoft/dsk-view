@@ -16,14 +16,16 @@ PRODUCTVERSION	VER_PRODUCTVERSION
 {
 	BLOCK "StringFileInfo" {
 		BLOCK "040904B0" {
-			VALUE "CompanyName"	, "Ufasoft"
-			VALUE "LegalCopyright"	, "Copyright (c) 2023 Ufasoft. GPL-3 License"
+			VALUE "CompanyName", "Ufasoft"
+			VALUE "LegalCopyright", "Copyright (c) 2023-2024 Ufasoft"
+			VALUE "License", "GPL-3"
 			VALUE "InternalName", "fs11"
 			VALUE "FileDescription"	, VER_FILEDESCRIPTION_STR
 			VALUE "FileVersion", VER_FILEVERSION_STR
 			VALUE "ProductName", VER_PRODUCTNAME_STR
 			VALUE "ProductVersion", VER_PRODUCTVERSION_STR
-			VALUE "Homepage", "https://ufasoft.com/dskview"
+			VALUE "Homepage", "https://ufasoft.com/dsk-view"
+			VALUE "SourceCode", "https://github.com/ufasoft/dsk-view"
 			VALUE "SupportEmail", "support@ufasoft.com"
 		}
 	}

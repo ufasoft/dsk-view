@@ -13,19 +13,19 @@
 using namespace U::FS;
 
 #if UCFG_PLATFORM_IX86
-#	define TOTAL_EXPORT0(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@0))
-#	define TOTAL_EXPORT1(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@4))
-#	define TOTAL_EXPORT2(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@8))
-#	define TOTAL_EXPORT3(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@12))
-#	define TOTAL_EXPORT4(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@16))
-#	define TOTAL_EXPORT5(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@20))
+#	define TOTAL_EXPORT0(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=_Total##fun@0))
+#	define TOTAL_EXPORT1(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=_Total##fun@4))
+#	define TOTAL_EXPORT2(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=_Total##fun@8))
+#	define TOTAL_EXPORT3(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=_Total##fun@12))
+#	define TOTAL_EXPORT4(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=_Total##fun@16))
+#	define TOTAL_EXPORT5(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=_Total##fun@20))
 #else
-#	define TOTAL_EXPORT0(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT1(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT2(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT3(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT4(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT5(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT0(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT1(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT2(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT3(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT4(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT5(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=Total##fun))
 #endif
 
 int ToErrorCode(Exception& ex) {
@@ -198,7 +198,7 @@ extern "C" int __stdcall TotalReadHeaderExW(HANDLE hArcData, tHeaderDataExW* Hea
 		HeaderData->FileTime = ((uint32_t)dt.Date << 16) | dt.Time;
 		HeaderData->UnpSize = HeaderData->PackSize = (uint32_t)e.Length;
 		HeaderData->UnpSizeHigh = HeaderData->PackSizeHigh = (uint32_t)(e.Length >> 32);
-		HeaderData->FileAttr = GetAttrs(e);			
+		HeaderData->FileAttr = GetAttrs(e);
 	} catch (Exception& ex) { return ToErrorCode(ex); }
 	return 0;
 }

@@ -25,9 +25,9 @@ using namespace U::FS;
 #define WINDOW_HEAD L"Open windows list" // Our menu title
 
 #if UCFG_PLATFORM_IX86
-#	define FAR_EXPORT(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Far##fun@4))
+#	define FAR_EXPORT(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=_Far##fun@4))
 #else
-#	define FAR_EXPORT(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Far##fun))
+#	define FAR_EXPORT(fun) comment(linker, _EXT_STRINGIZE(/export:##fun=Far##fun))
 #endif
 
 const Guid
