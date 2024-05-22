@@ -1,5 +1,4 @@
-// Copyright(c) 2023 Ufasoft  http://ufasoft.com  mailto:support@ufasoft.com,  Sergey Pavlov  mailto:dev@ufasoft.com
-//
+// © 2023 Ufasoft https://ufasoft.com, Sergey Pavlov mailto:dev@ufasoft.com
 // SPDX-License-Identifier: GPL-2.0-or-later
 //
 // Far Manager plugin
@@ -26,9 +25,9 @@ using namespace U::FS;
 #define WINDOW_HEAD L"Open windows list" // Our menu title
 
 #if UCFG_PLATFORM_IX86
-#	define FAR_EXPORT(fun) comment(linker, _STRINGIZE(/export:##fun=_Far##fun@4))
+#	define FAR_EXPORT(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Far##fun@4))
 #else
-#	define FAR_EXPORT(fun) comment(linker, _STRINGIZE(/export:##fun=Far##fun))
+#	define FAR_EXPORT(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Far##fun))
 #endif
 
 const Guid
@@ -83,11 +82,11 @@ static String s_author = UCFG_AUTHOR;
 #pragma FAR_EXPORT(GetGlobalInfoW)
 extern "C" void WINAPI FarGetGlobalInfoW(GlobalInfo& info) {
 	info.StructSize = sizeof(struct GlobalInfo);
-	info.MinFarVersion = MAKEFARVERSION(3, 0, 0, 0, VS_RELEASE);
+	info.MinFarVersion = MAKEFARVERSION(3, 0, 0, 4504, VS_RELEASE);
 	info.Version = MAKEFARVERSION(c_pluginVersion.Major, c_pluginVersion.Minor, 0, 0, VS_RELEASE);
 	info.Guid = c_guidFsPlugin;
-	info.Title = PLUGIN_NAME;
-	info.Description = _T(VER_PRODUCTNAME_STR);
+	info.Title = L"DSKView";				// Name Requirements: https://api.farmanager.com/ru/structures/globalinfo.html
+	info.Description = _T(VER_FILEDESCRIPTION_STR);
 	info.Author = s_author.c_wstr();
 }
 
@@ -157,8 +156,8 @@ extern "C" HANDLE WINAPI FarOpenW(const OpenInfo& info) {
 extern "C" void WINAPI FarGetOpenPanelInfoW(OpenPanelInfo& info) {
 	info.StructSize = sizeof(OpenPanelInfo);
 	auto& volume = *(Volume*)info.hPanel;
-	info.PanelTitle = volume.Filename.c_wstr();
-	info.CurDir = volume.CurDirName.c_wstr();
+	info.PanelTitle = volume.Filename;
+	info.CurDir = volume.CurDirName;
 	info.FreeSize = volume.FreeSpace();
 	info.Flags = OPIF_ADDDOTS | OPIF_USEFREESIZE;
 }

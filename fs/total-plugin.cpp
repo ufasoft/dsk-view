@@ -13,19 +13,19 @@
 using namespace U::FS;
 
 #if UCFG_PLATFORM_IX86
-#	define TOTAL_EXPORT0(fun) comment(linker, _STRINGIZE(/export:##fun=_Total##fun@0))
-#	define TOTAL_EXPORT1(fun) comment(linker, _STRINGIZE(/export:##fun=_Total##fun@4))
-#	define TOTAL_EXPORT2(fun) comment(linker, _STRINGIZE(/export:##fun=_Total##fun@8))
-#	define TOTAL_EXPORT3(fun) comment(linker, _STRINGIZE(/export:##fun=_Total##fun@12))
-#	define TOTAL_EXPORT4(fun) comment(linker, _STRINGIZE(/export:##fun=_Total##fun@16))
-#	define TOTAL_EXPORT5(fun) comment(linker, _STRINGIZE(/export:##fun=_Total##fun@20))
+#	define TOTAL_EXPORT0(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@0))
+#	define TOTAL_EXPORT1(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@4))
+#	define TOTAL_EXPORT2(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@8))
+#	define TOTAL_EXPORT3(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@12))
+#	define TOTAL_EXPORT4(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@16))
+#	define TOTAL_EXPORT5(fun) comment(linker, _STL_STRINGIZE(/export:##fun=_Total##fun@20))
 #else
-#	define TOTAL_EXPORT0(fun) comment(linker, _STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT1(fun) comment(linker, _STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT2(fun) comment(linker, _STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT3(fun) comment(linker, _STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT4(fun) comment(linker, _STRINGIZE(/export:##fun=Total##fun))
-#	define TOTAL_EXPORT5(fun) comment(linker, _STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT0(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT1(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT2(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT3(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT4(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
+#	define TOTAL_EXPORT5(fun) comment(linker, _STL_STRINGIZE(/export:##fun=Total##fun))
 #endif
 
 int ToErrorCode(Exception& ex) {
@@ -141,24 +141,47 @@ extern "C" int __stdcall TotalCloseArchive(HANDLE hArcData) {
 	return 0;
 }
 
-static tProcessDataProcW s_ProcessDataProc;
-
-#pragma TOTAL_EXPORT2(SetProcessDataProc)
-extern "C" void __stdcall TotalSetProcessDataProc(HANDLE hArcData, tProcessDataProc pProcessDataProc) {
-}
-
-#pragma TOTAL_EXPORT2(SetProcessDataProcW)
-extern "C" void __stdcall TotalSetProcessDataProcW(HANDLE hArcData, tProcessDataProcW pProcessDataProc) {
-	s_ProcessDataProc = pProcessDataProc;
+static int GetAttrs(const DirEntry& e) {
+	return (e.ReadOnly ? FILE_ATTRIBUTE_READONLY : 0)
+		| (e.Hidden ? FILE_ATTRIBUTE_HIDDEN : 0)
+		| (e.IsArchive ? FILE_ATTRIBUTE_ARCHIVE : 0)
+		| (e.IsSystem ? FILE_ATTRIBUTE_SYSTEM : 0)
+		| (e.IsVolumeLabel ? 8 : 0)
+		| (e.IsDirectory ? FILE_ATTRIBUTE_DIRECTORY : 0);
 }
 
 #pragma TOTAL_EXPORT2(ReadHeader)
-extern "C" int __stdcall TotalReadHeader(HANDLE hArcData, tHeaderDataExW * HeaderData) {
+extern "C" int __stdcall TotalReadHeader(HANDLE hArcData, tHeaderData* HeaderData) {
+	FileEnumerator& fe = *static_cast<FileEnumerator*>(hArcData);
+	try {
+		DirEntry e;
+		if (!fe.Next(e))
+			return E_END_ARCHIVE;
+		ZeroStruct(*HeaderData);
+		auto dt = FatDateTime::Clamp(e.CreationTime);
+		strncpy(HeaderData->FileName, e.FileName, size(HeaderData->FileName));
+		HeaderData->FileTime = ((uint32_t)dt.Date << 16) | dt.Time;
+		HeaderData->UnpSize = HeaderData->PackSize = (uint32_t)e.Length;
+		HeaderData->FileAttr = GetAttrs(e);
+	} catch (Exception& ex) { return ToErrorCode(ex); }
 	return 0;
 }
 
 #pragma TOTAL_EXPORT2(ReadHeaderEx)
 extern "C" int __stdcall TotalReadHeaderEx(HANDLE hArcData, tHeaderDataEx * HeaderData) {
+	FileEnumerator& fe = *static_cast<FileEnumerator*>(hArcData);
+	try {
+		DirEntry e;
+		if (!fe.Next(e))
+			return E_END_ARCHIVE;
+		ZeroStruct(*HeaderData);
+		auto dt = FatDateTime::Clamp(e.CreationTime);
+		strncpy(HeaderData->FileName, e.FileName, size(HeaderData->FileName));
+		HeaderData->FileTime = ((uint32_t)dt.Date << 16) | dt.Time;
+		HeaderData->UnpSize = HeaderData->PackSize = (uint32_t)e.Length;
+		HeaderData->UnpSizeHigh = HeaderData->PackSizeHigh = (uint32_t)(e.Length >> 32);
+		HeaderData->FileAttr = GetAttrs(e);
+	} catch (Exception& ex) { return ToErrorCode(ex); }
 	return 0;
 }
 
@@ -175,13 +198,7 @@ extern "C" int __stdcall TotalReadHeaderExW(HANDLE hArcData, tHeaderDataExW* Hea
 		HeaderData->FileTime = ((uint32_t)dt.Date << 16) | dt.Time;
 		HeaderData->UnpSize = HeaderData->PackSize = (uint32_t)e.Length;
 		HeaderData->UnpSizeHigh = HeaderData->PackSizeHigh = (uint32_t)(e.Length >> 32);
-		HeaderData->FileAttr =
-			(e.ReadOnly ? FILE_ATTRIBUTE_READONLY : 0)
-			| (e.Hidden ? FILE_ATTRIBUTE_HIDDEN : 0)
-			| (e.IsArchive ? FILE_ATTRIBUTE_ARCHIVE : 0)
-			| (e.IsSystem ? FILE_ATTRIBUTE_SYSTEM : 0)
-			| (e.IsVolumeLabel ? 8 : 0)
-			| (e.IsDirectory ? FILE_ATTRIBUTE_DIRECTORY : 0);
+		HeaderData->FileAttr = GetAttrs(e);			
 	} catch (Exception& ex) { return ToErrorCode(ex); }
 	return 0;
 }
@@ -267,14 +284,35 @@ extern "C" int	__stdcall TotalDeleteFilesW(WCHAR* PackedFile, WCHAR* DeleteList)
 	return 0;
 }
 
+static HWND g_hwndParent;
+
 #pragma TOTAL_EXPORT2(ConfigurePacker)
 extern "C" void __stdcall TotalConfigurePacker(HWND Parent, HINSTANCE DllInstance) {
+	g_hwndParent = Parent;
+}
+
+static tProcessDataProc s_ProcessDataProc;
+static tProcessDataProcW s_ProcessDataProcW;
+
+static tChangeVolProc s_pfnChangeVolProc;
+static tChangeVolProcW s_pfnChangeVolProcW;
+
+#pragma TOTAL_EXPORT2(SetProcessDataProc)
+extern "C" void __stdcall TotalSetProcessDataProc(HANDLE hArcData, tProcessDataProc pProcessDataProc) {
+	s_ProcessDataProc = pProcessDataProc;
+}
+
+#pragma TOTAL_EXPORT2(SetProcessDataProcW)
+extern "C" void __stdcall TotalSetProcessDataProcW(HANDLE hArcData, tProcessDataProcW pProcessDataProc) {
+	s_ProcessDataProcW = pProcessDataProc;
 }
 
 #pragma TOTAL_EXPORT2(SetChangeVolProc)
 extern "C" void __stdcall TotalSetChangeVolProc(HANDLE hArcData, tChangeVolProc pChangeVolProc1) {
+	s_pfnChangeVolProc = pChangeVolProc1;
 }
 
 #pragma TOTAL_EXPORT2(SetChangeVolProcW)
 extern "C" void __stdcall TotalSetChangeVolProcW(HANDLE hArcData, tChangeVolProcW pChangeVolProc1) {
+	s_pfnChangeVolProcW = pChangeVolProc1;
 }
