@@ -287,33 +287,35 @@ extern "C" intptr_t WINAPI FarPutFilesW(const PutFilesInfo& info) {
 		return 0;
 	auto& volume = *(Volume*)info.hPanel;
 	try {
-		/*
-		bool bShowDialog = !(info.OpMode & (OPM_SILENT | OPM_FIND | OPM_VIEW | OPM_EDIT | OPM_QUICKVIEW));
-		if (bShowDialog) {
-			String msg = "Copy/Move files?";
-			const wchar_t* messages[2] = { L"Confirmation", msg };
-			if (Far.Message(&c_guidFsPlugin, &c_guidCopyFiles, FMSG_MB_OKCANCEL, nullptr, messages, size(messages), 0))
+		try {
+			/*
+			bool bShowDialog = !(info.OpMode & (OPM_SILENT | OPM_FIND | OPM_VIEW | OPM_EDIT | OPM_QUICKVIEW));
+			if (bShowDialog) {
+				String msg = "Copy/Move files?";
+				const wchar_t* messages[2] = { L"Confirmation", msg };
+				if (Far.Message(&c_guidFsPlugin, &c_guidCopyFiles, FMSG_MB_OKCANCEL, nullptr, messages, size(messages), 0))
+					return -1;
+			}
+			*/
+			for (size_t i = 0; i < info.ItemsNumber; ++i) {
+				auto& item = info.PanelItem[i];
+				wchar_t srcPath[_MAX_PATH];
+				wcscpy(srcPath, info.SrcPath);
+				Far.FSF->AddEndSlash(srcPath);
+				wcscat(srcPath, item.FileName);
+				FileStream ifs(srcPath, FileMode::Open, FileAccess::Read);
+				if (info.OpMode & OPM_EDIT)
+					volume.ModifyFile(item.FileName, item.FileSize, ifs, item.CreationTime);
+				else
+					volume.AddFile(item.FileName, item.FileSize, ifs, item.CreationTime);
+			}
+			volume.Flush();
+			return 1;
+		} catch (Exception& ex) {
+			if (ex.code() == errc::operation_canceled)
 				return -1;
+			throw;
 		}
-		*/
-		for (size_t i = 0; i < info.ItemsNumber; ++i) {
-			auto& item = info.PanelItem[i];
-			wchar_t srcPath[_MAX_PATH];
-			wcscpy(srcPath, info.SrcPath);
-			Far.FSF->AddEndSlash(srcPath);
-			wcscat(srcPath, item.FileName);
-			FileStream ifs(srcPath, FileMode::Open, FileAccess::Read);
-			if (info.OpMode & OPM_EDIT)
-				volume.ModifyFile(item.FileName, item.FileSize, ifs, item.CreationTime);
-			else
-				volume.AddFile(item.FileName, item.FileSize, ifs, item.CreationTime);
-		}
-		volume.Flush();
-		return 1;
-	} catch (Exception& ex) {
-		if (ex.code() == errc::operation_canceled)
-			return -1;
-		throw;
 	} catch (exception& ex) {
 		return ShowErrorMessage(ex);
 	}
@@ -366,51 +368,87 @@ extern "C" intptr_t WINAPI FarGetFilesW(GetFilesInfo& info) {
 	if (info.StructSize < sizeof(GetFilesInfo))
 		return 0;
 	try {
-		bool bShowDialog = !(info.OpMode & (OPM_SILENT | OPM_FIND | OPM_VIEW | OPM_EDIT | OPM_QUICKVIEW));
-		s_farVolumeCallback.Interactive = bShowDialog;
-		if (bShowDialog) {
-			String msg = "Copy/Move files?";
-			const wchar_t* messages[2] = { L"Confirmation", msg };
-			if (Far.Message(&c_guidFsPlugin, &c_delete_files_dialog_guid, FMSG_MB_OKCANCEL, nullptr, messages, size(messages), 0))
-				return -1;
-		}
+		try {
+			bool bShowDialog = !(info.OpMode & (OPM_SILENT | OPM_FIND | OPM_VIEW | OPM_EDIT | OPM_QUICKVIEW));
+			s_farVolumeCallback.Interactive = bShowDialog;
+			if (bShowDialog) {
+				String msg = "Copy/Move files?";
+				const wchar_t* messages[2] = { L"Confirmation", msg };
+				if (Far.Message(&c_guidFsPlugin, &c_delete_files_dialog_guid, FMSG_MB_OKCANCEL, nullptr, messages, size(messages), 0))
+					return -1;
+			}
 
-		auto& volume = *(Volume*)info.hPanel;
-		const auto& files = volume.Files;
-		bool bReadOnly = true;
-		for (size_t i = 0; i < info.ItemsNumber; ++i) {
-			auto& item = info.PanelItem[i];
-			for (auto& file : files) {
-				if (file.FileName == item.FileName) {
-					String dstFilename = item.FileName;
-					dstFilename.Replace("/", "_");
-					dstFilename.Replace("\\", "_");
-					path dstPath = path(info.DestPath) / dstFilename;
-					{
-						FileStream ofs(dstPath, FileMode::CreateNew, FileAccess::Write);
+			auto& volume = *(Volume*)info.hPanel;
+			const auto& files = volume.Files;
+			bool bReadOnly = true;
+			for (size_t i = 0; i < info.ItemsNumber; ++i) {
+				auto& item = info.PanelItem[i];
+				for (auto& file : files) {
+					if (file.FileName == item.FileName) {
+						String dstFilename = item.FileName;
+						dstFilename.Replace("/", "_");
+						dstFilename.Replace("\\", "_");
+						path dstPath = path(info.DestPath) / dstFilename;
+						if (exists(dstPath)) {
+							FARMESSAGEFLAGS flags = FMSG_WARNING | FMSG_MB_YESNOCANCEL;
+							String sDstPath = dstPath;
+							const wchar_t* messages[4] = { L"Warning", L"File already exists", sDstPath, L"Override?" };
+							auto res = Far.Message(&c_guidFsPlugin, &c_overwrite_dialog_guid, flags, nullptr, messages, 4, 0);
+							switch (res) {
+							case 0:
+								break;
+							case 1:
+								continue;
+							case -1:
+							case 2:
+								return -1;
+							}
+						}
+						FileStream ofs(dstPath, FileMode::Create, FileAccess::Write);
 						volume.CopyFileTo(file, ofs);
+						/*!!!R
+						FileSystemInfo fileInfo(path(destPath), false);
+						fileInfo.CreationTime = file.CreationTime;
+						fileInfo.LastWriteTime = file.CreationTime;
+						*/
+						if (info.Move) {
+							volume.RemoveFile(item.FileName);
+							bReadOnly = false;
+						}
+						break;
 					}
-					/*!!!R
-					FileSystemInfo fileInfo(path(destPath), false);
-					fileInfo.CreationTime = file.CreationTime;
-					fileInfo.LastWriteTime = file.CreationTime;
-					*/
-					if (info.Move) {
-						volume.RemoveFile(item.FileName);
-						bReadOnly = false;
-					}
-					break;
 				}
 			}
+			if (!bReadOnly)
+				volume.Flush();
+			return 1;
+		} catch (Exception& ex) {
+			if (ex.code() == errc::operation_canceled)
+				return -1;
+			throw;
 		}
-		if (!bReadOnly)
-			volume.Flush();
-		return 1;
-	} catch (Exception& ex) {
-		if (ex.code() == errc::operation_canceled)
-			return -1;
-		throw;
 	} catch (exception& ex) {
 		return ShowErrorMessage(ex);
 	}
 }
+
+
+
+
+//!!!T
+bool TestException() {
+	try {
+		try {
+			Throw(HRESULT_FROM_WIN32(ERROR_DISK_CORRUPT));
+		} catch (Exception&) {
+			cout << "Inner" << endl;
+			throw;
+		}
+	} catch (exception&) {
+		cout << "Outer" << endl;
+	}
+	return true;
+}
+
+//!!!R static bool s_bool = TestException();
+

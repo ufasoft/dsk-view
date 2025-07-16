@@ -82,14 +82,17 @@ protected:
 				e.ReadOnly = status == EntryStatus::ReadOnly;
 				if (e.Aux2 == CurDirId || bWithExtra) {
 					Span spanName = Span(p + 2, 14);
+					for (int off = 13; off-- > 2;)
+						if (!spanName[off])
+							spanName = spanName.subspan(0, off);
 					e.FileName = GetFilenamePart(e.IsDirectory ? spanName.subspan(1) : spanName);
 					e.DirEntryDiskOffset = 0500 + (p - rootDir.data());
 					e.FirstCluster = load_little_u16(p + 16);
-					e.AllocationSize = (uint32_t)load_little_u16(p + 18) * BytesPerSector;
-					e.Length = e.AllocationSize
-						? (e.AllocationSize - BytesPerSector) | load_little_u16(p + 22)
-						: 0;
+					uint32_t nBlocks = load_little_u16(p + 18);
 					e.Aux3 = load_little_u16(p + 20);		// address
+					auto rem = load_little_u16(p + 22);
+					e.AllocationSize = nBlocks * BytesPerSector;
+					e.Length = rem ? ((e.AllocationSize - 1) & 0xFFFFE000) | rem : e.AllocationSize;
 					r.push_back(e);
 				}
 				break;
@@ -134,7 +137,7 @@ protected:
 				usedSectors += (uint16_t)CalcNumberOfClusters(e.Length);
 		uint8_t bufMetaData[4];
 		store_little_u16(bufMetaData, (uint16_t)entries.size());
-		store_little_u16(bufMetaData + 2, usedSectors);		
+		store_little_u16(bufMetaData + 2, usedSectors);
 		Fs.Write(030, bufMetaData);
 	}
 
