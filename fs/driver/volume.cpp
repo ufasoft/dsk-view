@@ -1,21 +1,12 @@
-// Copyright(c) 2023 Ufasoft  http://ufasoft.com  mailto:support@ufasoft.com,  Sergey Pavlov  mailto:dev@ufasoft.com
-//
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// Based on
-//	RT–11 Volume and File Formats Manual
-//	http://www.bitsavers.org/pdf/dec/pdp11/rt11/v5.6_Aug91/AA-PD6PA-TC_RT-11_Volume_and_File_Formats_Manual_Aug91.pdf
+// © 2023 Ufasoft https://ufasoft.com, Sergey Pavlov mailto:dev@ufasoft.com
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "pch.h"
 
 #include "volume.h"
 
 using namespace std;
-using namespace std::chrono;
 using namespace std::filesystem;
-
-#include "libs.cpp"
-
 
 namespace U::FS {
 
@@ -69,7 +60,7 @@ Volume::CFiles::iterator Volume::FindEntry(const String& filename) {
 Volume::CFiles::iterator Volume::GetEntry(const String& filename) {
 	auto it = FindEntry(filename);
 	if (it == Files.end())
-		Throw(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+		Throw(errc::no_such_file_or_directory);
 	return it;
 }
 
@@ -94,7 +85,7 @@ uint64_t Volume::CalcNumberOfClusters(uint64_t len) {
 	if (0 == len)
 		return len;
 	auto clusterSize = (uint32_t)BytesPerSector * SectorsPerCluster;
-	return (len | (clusterSize - 1) + 1) / clusterSize;
+	return (len + clusterSize - 1) / clusterSize;
 }
 
 uint64_t Volume::FindFreeContiguousArea(uint64_t nClusters) {
