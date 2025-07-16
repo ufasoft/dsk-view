@@ -15,25 +15,18 @@
 #include <wchar.h>
 #include <cstdlib>
 #include <cstdint>
-/*
-#include <el/libext/win32/Shell/Shell.h>
-#include <el/libext/win32/clipboard.h>
-#include <el/gui/menu.h>
-using namespace Ext::Win::Shell;
-
-*/
+//!!!#include <el/stl/type_traits>
+//!!!#include <el/stl/string>
+//#include <el/libext/win32/Shell/Shell.h>
+//#include <el/libext/win32/clipboard.h>
+//#include <el/gui/menu.h>
 using namespace Ext;
 using namespace std;
+//using namespace Ext::Win::Shell;
 
-/*
-#include <chrono>
-#include <fstream>
-//#include <filesystem>
-#include <vector>
-*/
 
 #pragma warning(disable: 26495)		// Initialize member variable
 #pragma warning(disable: 26813)		// Use bitwise and
 
-
 #include "file_config.h"
+

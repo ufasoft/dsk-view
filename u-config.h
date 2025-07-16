@@ -3,6 +3,7 @@
 
 #define _WIN32_WINNT 0xA00
 
+#define UCFG_NTAPI 0
 
 #define _MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION
 

@@ -1,3 +1,4 @@
+#pragma comment(lib, "psapi.lib")
 #pragma comment(lib, "libext.lib")
 #pragma comment(lib, "gui.lib")
 

@@ -45,6 +45,9 @@
     <ClInclude Include="driver\files11-volume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\FOREIGN\far\plugin.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="far-plugin.cpp">
@@ -92,14 +95,23 @@
     <ClCompile Include="total-plugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\el\elwin\dllmodul.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="driver\files11-volume.cpp">
       <Filter>Source Files\driver</Filter>
     </ClCompile>
     <ClCompile Include="driver\files11-ods1-volume.cpp">
       <Filter>Source Files\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\el\elwin\dllmodul.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\el\elwin\dllserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

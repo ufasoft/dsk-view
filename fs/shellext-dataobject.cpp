@@ -15,7 +15,7 @@
 #include <atlcom.h>
 using namespace ATL;
 
-using namespace Ext::Gui;
+//using namespace Ext::Gui;
 using namespace Ext::Ole;
 using namespace Ext::Win;
 
