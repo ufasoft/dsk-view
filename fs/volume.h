@@ -20,7 +20,7 @@ public:
 	String AlternateFileName = nullptr;
 	Blob OriginalFilenamePresentation;
 	int64_t Length = 0, AllocationSize = 0;				// In bytes
-	DateTime CreationTime, LastWriteTime, LastAccessTime;
+	DateTime CreationTime, LastWriteTime, LastAccessTime, ExpirationTime, BackupTime;
 	Blob ExtraData;
 
 	uint64_t DirEntryDiskOffset = 0xFFFFFFFF;

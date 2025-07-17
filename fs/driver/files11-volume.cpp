@@ -9,6 +9,9 @@
 
 #include "pch.h"
 #include "files11-volume.h"
+#include "files11-def.h"
+
+using namespace U::FS::Files11;
 
 namespace U::FS {
 
@@ -16,12 +19,6 @@ class Files11ods2Volume : public Files11ods1Volume {
 	typedef Files11ods1Volume base;
 
 	static inline const DateTime c_file11Epoch = { 1858, 11, 17 };
-
-	enum Attr {
-		FH2$M_DIRECTORY = 1 << 13
-		, FH2$M_MARKDEL = 1 << 15
-		, FH2$M_ERASE = 1 << 17
-	};
 
 	int MaxNameLength() override { return 80; }
 
@@ -48,7 +45,7 @@ class Files11ods2Volume : public Files11ods1Volume {
 		Fs.Position = e.FirstCluster * BytesPerSector;
 		Fs.ReadExactly(data, 512);
 		const uint8_t* mapArea = data + data[1] * 2;
-		for (int off = 0, end = off + data[58] * 2; off < end;) {
+		for (int off = 0, end = data[58] * 2; off < end;) {
 			uint16_t wl = load_little_u16(mapArea + off)
 				, wh = load_little_u16(mapArea + off + 2);
 			uint32_t lbn, count = 0;
@@ -68,9 +65,9 @@ class Files11ods2Volume : public Files11ods1Volume {
 				off += 6;
 				break;
 			case 3:
-				off += 8;
 				count = wh | ((uint32_t)(wl & 0x3FFF) << 16);
 				lbn = load_little_u32(mapArea + off + 4);
+				off += 8;
 				break;
 			}
 			for (int i = 0; i < count; ++i)
@@ -86,7 +83,8 @@ class Files11ods2Volume : public Files11ods1Volume {
 		uint16_t checksum = load_little_u16(data + 510);
 		uint16_t fnum = load_little_u16(data + 8);
 		uint32_t fcha = load_little_u32(data + 52);
-		if (!fnum && !checksum && (fcha & Attr::FH2$M_MARKDEL))
+		if (!fnum && !checksum && (fcha & Attr::FH2$M_MARKDEL)
+			|| data[7] != 2)		// FH2$W_STRUCLEV major
 			return;		// Deleted entry
 		uint16_t sum = 0;
 		for (int i = 0; i < 255; ++i)
@@ -105,6 +103,8 @@ class Files11ods2Volume : public Files11ods1Volume {
 		e.IsDirectory = fcha & Attr::FH2$M_DIRECTORY;
 		e.CreationTime = ParseOds2DateTime(ident + 22);
 		e.LastWriteTime = ParseOds2DateTime(ident + 30);
+		e.ExpirationTime = ParseOds2DateTime(ident + 38);
+		e.BackupTime = ParseOds2DateTime(ident + 46);
 		e.Length = (int64_t)GetFileSectors(e).size() * BytesPerSector;
 
 		if (!AllDirEntries.insert(make_pair(fnum, e)).second)
@@ -130,8 +130,10 @@ class Files11ods2Volume : public Files11ods1Volume {
 		for (int off = 0; off < s.size();) {
 			const uint8_t* p = s.data() + off;
 			uint16_t size = load_little_u16(p);
+			if (size == 0)
+				break;
 			if (size == 0xFFFF) {
-				off = (off + 512) & 0xFFE0;
+				off = (off + 512) & 0xFFE00;
 				continue;
 			}
 			const uint8_t* end = p + size + 2;
@@ -166,7 +168,8 @@ static class Files11Ods2VolumeFactory : public IVolumeFactory {
 		if (s.size() < 1024)
 			return 0;
 		if (strncmp((const char*)home + 496, "DECFILE11B  ", 12)
-			|| load_little_u32(home) != 1)
+			|| load_little_u32(home) != 1
+			|| home[13] != 2)
 			return 0;
 		int weights = 2;
 		if (load_little_u16(data) == 0240)						// PDP-11 NOP opcode
