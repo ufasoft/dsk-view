@@ -83,7 +83,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ConformanceMode>false</ConformanceMode>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;..;$(SRCDIR)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(SRCDIR);../foreign</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -110,7 +110,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ConformanceMode>false</ConformanceMode>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.;..;$(SRCDIR)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(SRCDIR);../foreign</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -137,7 +137,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ConformanceMode>false</ConformanceMode>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.;..;$(SRCDIR)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(SRCDIR);../foreign</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IntrinsicFunctions>false</IntrinsicFunctions>
@@ -171,7 +171,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ConformanceMode>false</ConformanceMode>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>.;..;$(SRCDIR)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(SRCDIR);../foreign</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
