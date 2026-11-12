@@ -136,6 +136,8 @@ class Files11ods2Volume : public Files11ods1Volume {
 				off = (off + 512) & 0xFFE00;
 				continue;
 			}
+			if (size >= 0x80)
+				break;			//!!!?
 			const uint8_t* end = p + size + 2;
 			if (size & 1)
 				Throw(HRESULT_FROM_WIN32(ERROR_DISK_CORRUPT));

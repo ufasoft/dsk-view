@@ -1,5 +1,5 @@
-// Based on `RT–11 Volume and File Formats Manual` document
-// http://bitsavers.informatik.uni-stuttgart.de/pdf/dec/pdp11/rt11/v5.6_Aug91/AA-PD6PA-TC_RT-11_Volume_and_File_Formats_Manual_Aug91.pdf
+// © 2023 Ufasoft https://ufasoft.com, Sergey Pavlov mailto:dev@ufasoft.com
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
 
@@ -7,7 +7,8 @@
 
 namespace U::FS {
 using namespace std;
-using byte = std::byte;
+//using byte = std::byte;
+typedef unsigned char byte;
 
 
 class Rt11Volume : public Volume {

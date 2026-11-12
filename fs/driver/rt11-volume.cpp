@@ -56,9 +56,9 @@ void EncodeRadix50(const String& s, uint16_t filename[3]) {
 		if (s.length() > i + 4 || s[i] != '.')
 			throw exception("Filename cannot be converted into RADIX-50");
 		filename[2] = uint16_t(
-			(i < s.length() ? ToRadix50(s[i+1]) : 0) * 40 * 40)
-			+ (i + 1 < s.length() ? ToRadix50(s[i + 2]) : 0) * 40
-			+ (i + 2 < s.length() ? ToRadix50(s[i + 3]) : 0);
+			(i + 1 < s.length() ? ToRadix50(s[i + 1]) : 0) * 40 * 40)
+			+ (i + 2 < s.length() ? ToRadix50(s[i + 2]) : 0) * 40
+			+ (i + 3 < s.length() ? ToRadix50(s[i + 3]) : 0);
 	}
 }
 
@@ -436,6 +436,8 @@ static class Rt11VolumeFactory : public IVolumeFactory {
 		if (load_little_u16(data) == 0240)						// PDP-11 NOP opcode
 			weights += 1;
 		if (!memcmp(data + 031, rt11BootSectorMessage, sizeof(rt11BootSectorMessage) - 1))
+			weights += 2;
+		if (!memcmp(data + 0x1E1, rt11BootSectorMessage, sizeof(rt11BootSectorMessage) - 1))
 			weights += 2;
 		auto sysVer = load_little_u16(data + 01726);
 		if (sysVer == c_sysVerV3A || sysVer == c_sysVerV05A)
