@@ -128,7 +128,7 @@ vector<DirEntry> Rt11Volume::GetDirEntries(uint32_t cluster, bool bWithExtra) {
 				dirEntry.LastWriteTime = dirEntry.LastAccessTime = dirEntry.CreationTime;
 			}
 			dirEntry.ReadOnly = (uint16_t)status & (uint16_t)DirectoryEntryStatus::Protected;
-			dirEntry.DirEntryDiskOffset = (uint32_t)blkSegment * 512 + int(entry - segmentSectors);
+			dirEntry.DirEntryDiskOffset = (uint32_t)blk * 512 + int(entry - segmentSectors);
 			dirEntry.EntrySize = entrySize;
 			auto len = load_little_u16(entry + 8);
 			dirEntry.FirstCluster = fileDataBlock;
