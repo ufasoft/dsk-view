@@ -6,7 +6,9 @@
 
 namespace U::FS {
 using namespace std;
-using byte = std::byte;
+
+//using Byte = std::byte;
+typedef unsigned char Byte;
 
 extern const CodePageEncoding s_encodingKoi8;
 

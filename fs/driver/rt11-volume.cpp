@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // DEC RT-11 Filesystem driver
-// 
+//
 // Based on
 //	RT–11 Volume and File Formats Manual
 //	http://www.bitsavers.org/pdf/dec/pdp11/rt11/v5.6_Aug91/AA-PD6PA-TC_RT-11_Volume_and_File_Formats_Manual_Aug91.pdf
@@ -291,7 +291,7 @@ void Rt11Volume::InsertIntoFiles(const DirEntry& entry) {
 
 void Rt11Volume::CopyFileTo(const DirEntry& fileEntry, Stream& os) {
 	for (int i = 0, nBlocks = int((fileEntry.Length + 511) / 512); i < nBlocks; ++i) {
-		byte block[512];
+		Byte block[512];
 		ReadBlock(uint32_t(fileEntry.FirstCluster + i), block);
 		os.WriteBuffer(block, 512);
 	}
@@ -371,7 +371,7 @@ void Rt11Volume::ModifyFile(const String& filename, uint64_t len, Stream& istm, 
 	entry.Empty = false;
 	entry.CreationTime = creationTimestamp;
 	if (nSector) {
-		byte buf[512];
+		Byte buf[512];
 		ZeroStruct(buf);
 		Fs.Position = (entry.FirstCluster + nSector - 1) * BytesPerSector;
 		Fs.WriteBuffer(buf, 512);			// Zero last block to avoid garbage if istm size is not multiple of 512

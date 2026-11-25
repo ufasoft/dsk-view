@@ -7,8 +7,8 @@
 
 namespace U::FS {
 using namespace std;
-//using byte = std::byte;
-typedef unsigned char byte;
+//using Byte = std::byte;
+typedef unsigned char Byte;
 
 
 class Rt11Volume : public Volume {
@@ -47,9 +47,9 @@ public:
 private:
 
 	struct DataBlock {
-		byte Bytes[512];
+		Byte Bytes[512];
 
-		operator const byte*() const { return Bytes; }
+		operator const Byte*() const { return Bytes; }
 	};
 
 	void ReadBlock(int n, void *data);

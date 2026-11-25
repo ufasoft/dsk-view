@@ -1,3 +1,6 @@
+// © 2023 Ufasoft https://ufasoft.com, Sergey Pavlov mailto:dev@ufasoft.com
+// SPDX-License-Identifier: GPL-2.0-or-later
+//
 // Common functionality for BK-0010/0011 computer Filesystems
 
 #pragma once
@@ -40,7 +43,7 @@ protected:
 	void CopyFileTo(const DirEntry& fileEntry, Stream& os) override {
 		OptionalCopyHeader(fileEntry, os);
 		Fs.Position = (uint64_t)fileEntry.FirstCluster * BytesPerSector;
-		array<byte, 512> buf;
+		array<Byte, 512> buf;
 		for (int64_t len = fileEntry.Length; len > 0; len -= buf.size()) {
 			size_t cb = (size_t)min(len, (int64_t)buf.size());
 			Fs.ReadExactly(buf.data(), cb);

@@ -474,7 +474,7 @@ void FatVolume::Init(const path& filepath) {
 
 void FatVolume::CopyFileTo(const DirEntry& fileEntry, Stream& os) {
 	if (uint32_t c = (uint32_t)fileEntry.FirstCluster) {
-		vector<byte> buf(uint32_t(SectorsPerCluster) * BytesPerSector);
+		vector<Byte> buf(uint32_t(SectorsPerCluster) * BytesPerSector);
 		for (int64_t len = (int64_t)fileEntry.Length; len > 0; c = Fat[c], len -= buf.size()) {
 			if (c >= MinFinalCluster)
 				Throw(HRESULT_FROM_WIN32(ERROR_DISK_CORRUPT));
